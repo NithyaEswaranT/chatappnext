@@ -184,17 +184,17 @@ export default function ChatClient({
 
 
   return (
-    <div className="flex-1 flex flex-col h-screen overflow-hidden">
-      {/* Room Header */}
-      <header className="px-6 py-4 border-b border-white/5 bg-black/10 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-violet-400 font-bold text-lg">#</span>
-          <h1 className="text-md font-bold text-gray-200">{roomName}</h1>
-          <span className="text-xs text-gray-500">• ID: {roomId}</span>
+    <div className="flex-1 flex flex-col h-[100dvh] md:h-screen overflow-hidden">
+      {/* Room Header — hidden on mobile (top bar already shows ChatFlow brand) */}
+      <header className="hidden md:flex px-6 py-4 border-b border-white/5 bg-black/10 items-center justify-between">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-violet-400 font-bold text-lg shrink-0">#</span>
+          <h1 className="text-md font-bold text-gray-200 truncate">{roomName}</h1>
+          <span className="text-xs text-gray-500 hidden lg:inline shrink-0">• ID: {roomId}</span>
         </div>
 
         {/* Real-time Connection Badge */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <span
             className={`w-2 h-2 rounded-full ${
               status === "connected"
@@ -210,8 +210,30 @@ export default function ChatClient({
         </div>
       </header>
 
+      {/* Mobile-only room header strip */}
+      <div className="md:hidden px-4 py-2 border-b border-white/5 bg-black/20 flex items-center justify-between">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-violet-400 font-bold">#</span>
+          <span className="text-sm font-semibold text-gray-200 truncate">{roomName}</span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              status === "connected"
+                ? "bg-emerald-500 animate-pulse"
+                : status === "connecting"
+                ? "bg-amber-500 animate-pulse"
+                : "bg-red-500"
+            }`}
+          ></span>
+          <span className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">
+            {status}
+          </span>
+        </div>
+      </div>
+
       {/* Messages Feed */}
-      <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto px-3 py-4 md:p-6 flex flex-col gap-3 md:gap-4">
         {messages.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
             <p className="text-gray-500 text-sm">No messages yet in this room.</p>
@@ -223,7 +245,7 @@ export default function ChatClient({
             return (
               <div
                 key={msg._id}
-                className={`flex flex-col max-w-[70%] ${
+                className={`flex flex-col max-w-[85%] md:max-w-[70%] ${
                   isMe ? "self-end items-end" : "self-start items-start"
                 }`}
               >
@@ -236,7 +258,7 @@ export default function ChatClient({
                 
                 {/* Message Bubble */}
                 <div
-                  className={`px-4 py-2.5 rounded-2xl text-sm ${
+                  className={`px-3.5 py-2 md:px-4 md:py-2.5 rounded-2xl text-sm ${
                     isMe
                       ? "bg-violet-600 text-white rounded-br-none shadow-md shadow-violet-600/10"
                       : "bg-white/5 border border-white/5 text-gray-200 rounded-bl-none"
@@ -246,7 +268,7 @@ export default function ChatClient({
                 </div>
 
                 {/* Timestamp */}
-                <span className="text-[9px] text-gray-500 mt-1 px-1">
+                <span className="text-[9px] text-gray-500 mt-1 px-1" suppressHydrationWarning>
                   {new Date(msg.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -260,17 +282,22 @@ export default function ChatClient({
       </div>
 
       {/* Message Input Form */}
-      <footer className="p-4 bg-black/10 border-t border-white/5">
-        <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto">
+      <footer className="px-3 py-3 md:py-4 md:pl-6 md:pr-[245px] bg-black/10 border-t border-white/5 safe-bottom">
+        <form onSubmit={handleSendMessage} className="flex gap-2 w-full max-w-4xl">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={`Message #${roomName}...`}
-            className="glass-input flex-1 text-sm py-3"
+            className="glass-input flex-1 text-sm py-2.5 md:py-3"
             maxLength={1000}
           />
-          <button type="submit" className="btn-primary px-5" disabled={!input.trim()}>
+          <button
+            type="submit"
+            className="btn-primary px-3 md:px-5 shrink-0"
+            disabled={!input.trim()}
+            aria-label="Send message"
+          >
             <span className="hidden sm:inline">Send</span>
             <svg
               className="w-4 h-4"

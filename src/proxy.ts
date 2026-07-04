@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken, COOKIE_NAME } from "@/lib/auth";
 
 /**
- * Next.js Middleware
- * ------------------
- * MERN developers: In Express, you write `app.use('/api/protected', authMiddleware)`.
- * In Next.js, you create ONE file called `middleware.ts` at the `src/` root.
- * Next.js automatically runs this function BEFORE every matched request.
+ * Next.js Proxy (formerly Middleware)
+ * ------------------------------------
+ * As of Next.js 16, the file convention changed from `middleware.ts` to `proxy.ts`,
+ * and the exported function changed from `middleware` to `proxy`.
+ * The behaviour is identical — Next.js runs this function BEFORE every matched request.
  *
  * This is the most efficient way to protect routes because:
  * - It runs at the Edge (before your page/component code)
  * - It intercepts the request BEFORE rendering, preventing any flash of unauthorized content
  * - You write protection logic ONCE here instead of in every page
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Read the JWT token from cookies
@@ -51,9 +51,8 @@ export function middleware(request: NextRequest) {
 /**
  * Matcher Configuration
  * ---------------------
- * Tell Next.js which paths this middleware should run on.
- * We exclude static files, images, and API routes from the middleware
- * to avoid unnecessary overhead.
+ * Tell Next.js which paths this proxy should run on.
+ * We exclude static files, images, and API routes to avoid unnecessary overhead.
  */
 export const config = {
   matcher: [
