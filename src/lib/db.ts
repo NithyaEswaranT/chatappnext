@@ -7,7 +7,7 @@ interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 }
-
+//log
 declare global {
   // eslint-disable-next-line no-var
   var mongoose: MongooseCache | undefined;
