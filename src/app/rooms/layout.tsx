@@ -5,7 +5,7 @@ import { connectDB } from "@/lib/db";
 import { Room } from "@/models/Room";
 import CreateRoomModal from "./CreateRoomModal";
 import { logger } from "@/lib/logger";
-import { getSession } from "@/lib/auth";
+import { getSession, clearSessionCookie } from "@/lib/auth";
 import MobileSidebarWrapper from "./MobileSidebarWrapper";
 
 /**
@@ -61,9 +61,8 @@ export default async function RoomsLayout({
   async function logoutAction() {
     "use server";
     logger.info("LogoutAction (Server Action)", `Logging out user '${username}'`);
-    const cookieStore = await cookies();
-    cookieStore.delete("username");
-    redirect("/");
+    await clearSessionCookie();
+    redirect("/login");
   }
 
   // Sidebar content is extracted so it can be passed to the client wrapper
